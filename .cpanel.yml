@@ -1,0 +1,4 @@
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/commtjdu/nextauth.com/
+    - /bin/cp * $DEPLOYPATH
