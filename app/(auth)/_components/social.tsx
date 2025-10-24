@@ -1,9 +1,9 @@
 'use client'
 
 import { Button } from "@/components/ui/button"
-import { FcGoogle } from "react-icons/fc"
-import { FaGithub } from "react-icons/fa"
-import { signIn } from "next-auth/react"
+// import { FcGoogle } from "react-icons/fc"
+// import { FaGithub } from "react-icons/fa"
+// import { signIn } from "next-auth/react"
 import { DEFAULT_REDIRECT_ROUTES } from "@/route"
 import { useSearchParams } from "next/navigation"
 
@@ -11,18 +11,18 @@ export const Social = () => {
     const searchParams = useSearchParams()
     const callbackUrl = searchParams.get("callbackUrl")
     const onClick = ( provider : "google" | "github" ) => {
-        signIn( provider,{
-            callbackUrl: callbackUrl || DEFAULT_REDIRECT_ROUTES
-        })
+        // signIn( provider,{
+        //     callbackUrl: callbackUrl || DEFAULT_REDIRECT_ROUTES
+        // })
     }
 
     return (
         <div className="flex items-center w-full gap-x-2" >
             <Button className="flex-1" size={"lg"} variant={"outline"} onClick={() => onClick("google")}>
-                <FcGoogle className="w-6 h-6" />
+                {/* <FcGoogle className="w-6 h-6" /> */}
             </Button>
             <Button className="flex-1" size={"lg"} variant={"outline"} onClick={() => onClick("github")}>
-                <FaGithub className="w-6 h-6" />
+                {/* <FaGithub className="w-6 h-6" /> */}
             </Button>
         </div>
     )

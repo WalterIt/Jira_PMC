@@ -43,28 +43,28 @@ export const LoginForm = () => {
          startTransition(() => {
              login(values, callbackUrl)
                  .then((data) => {
-                     if (data?.error) {
-                       if (isTwoFactor) {
-                         // Preserva o código para permitir nova tentativa
-                         form.setValue("code", "");
-                       } else {
-                         form.reset({
-                           email: "",
-                           password: "",
-                           code: "",
-                         });
-                       }
-                       setError(data.error);
-                     }
+                    //  if (data?.error) {
+                    //    if (isTwoFactor) {
+                    //      // Preserva o código para permitir nova tentativa
+                    //      form.setValue("code", "");
+                    //    } else {
+                    //      form.reset({
+                    //        email: "",
+                    //        password: "",
+                    //        code: "",
+                    //      });
+                    //    }
+                    //    setError(data.error);
+                    //  }
 
-                     if (data?.success) {
-                         form.reset()
-                         setSuccess(data?.success)
-                     }
+                    //  if (data?.success) {
+                    //      form.reset()
+                    //      setSuccess(data?.success)
+                    //  }
 
-                     if (data?.twoFactor) {
-                         setTwoFactor(true)
-                     }
+                    //  if (data?.twoFactor) {
+                    //      setTwoFactor(true)
+                    //  }
                  })
                  .catch(() => setError("Something Went Wrong!"))
          }) 

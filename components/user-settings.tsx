@@ -4,7 +4,7 @@ import * as z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { SettingsSchema } from '@/schemas'
 import React, {  useState, useTransition } from 'react'
-import { useSession } from 'next-auth/react'
+// import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { settings } from '@/actions/settings'
@@ -14,14 +14,15 @@ import { Input } from '@/components/ui/input'
 import { FormSuccess } from '@/components/form-success'
 import { FormError } from '@/components/form-error'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { UserRole } from '@prisma/client'
-import { Switch } from '@/components/ui/switch'
+// import { UserRole } from '@prisma/client'
+// import { Switch } from '@/components/ui/switch'
 import { ExtendedUser } from '@/next-auth'
+import { User } from 'lucide-react'
 
 const UserSettings = ({user}: {user : ExtendedUser}) => {
   const [success, setSuccess] = useState<string | undefined>()
   const [error, setError] = useState<string | undefined>()
-  const { update } = useSession()
+  // const { update } = useSession()
   const [isPending, startTransition] = useTransition()
 
 
@@ -31,7 +32,7 @@ const UserSettings = ({user}: {user : ExtendedUser}) => {
       name: user?.name || undefined,
       email: user?.email || undefined,
       isTwoFactorEnabled: user?.isTwoFactorEnabled || undefined,
-      role: user?.role,
+      // role: user?.role,
       password: undefined,
       newPassword: undefined
     }
@@ -41,13 +42,13 @@ const UserSettings = ({user}: {user : ExtendedUser}) => {
     startTransition(() => {
       settings(values)
         .then((data) => {
-          if (data?.error) {
-            setError(data.error)
-          }
-          if (data?.success) {
-            update()
-            setSuccess(data.success)
-          }
+          // if (data?.error) {
+          //   setError(data.error)
+          // }
+          // if (data?.success) {
+          //   update()
+          //   setSuccess(data.success)
+          // }
         })
         .catch(() => setError("Something Went Wrong!"))
     })
@@ -141,7 +142,7 @@ const UserSettings = ({user}: {user : ExtendedUser}) => {
               )}
               
             
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="role"
                 render={({ field }) => (
@@ -165,7 +166,7 @@ const UserSettings = ({user}: {user : ExtendedUser}) => {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
 
               {user?.isOauth === false && (
               <FormField 
@@ -180,11 +181,11 @@ const UserSettings = ({user}: {user : ExtendedUser}) => {
                     </FormDescription>
                   </div>
                   <FormControl>
-                    <Switch
+                    {/* <Switch
                       disabled={isPending}
                       checked={field.value}
                       onCheckedChange={field.onChange}
-                    />
+                    /> */}
                   </FormControl>
                 </FormItem>
               )}

@@ -1,7 +1,7 @@
 "use client"
 import { useSearchParams } from "next/navigation"
 import { CardWrapper } from "./card-wrapper"
-import BeatLoader from "react-spinners/BeatLoader"
+// import BeatLoader from "react-spinners/BeatLoader"
 import { useCallback, useEffect, useState } from "react"
 import { newVerification } from "@/actions/new-verification"
 import { FormError } from "@/components/form-error"
@@ -23,8 +23,8 @@ export const NewVerificationForm = () => {
 
         newVerification(token)
           .then((data) => {
-            setError(data?.error);
-            setSuccess(data?.success);
+            // setError(data?.error);
+            // setSuccess(data?.success);
           })
           .catch(() => {
             setError("Something went wrong!");
@@ -40,7 +40,8 @@ export const NewVerificationForm = () => {
         <CardWrapper headerLabel="Verify Your Email" backButtonLabel="Back To Login" backButtonHref="/login">
             <div className="w-full flex justify-center items-center">
                 {!success && !error && (
-                    <BeatLoader />
+                    <></>
+                    // <BeatLoader />
                 )}
             <FormError message={error} />
             <FormSuccess message={success} />
