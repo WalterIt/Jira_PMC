@@ -1,4 +1,34 @@
 import { betterAuth } from "better-auth";
+import {prismaAdapter} from "better-auth/adapters/prisma";
+import {db} from "./lib/db";
+
+
+
+const auth = betterAuth({
+  database: prismaAdapter(db, {
+    provider: "postgresql",
+  })
+
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // import authConfig from "./auth.config"
 // import { PrismaAdapter } from "@auth/prisma-adapter"
 // import { db } from "./lib/db"
@@ -7,12 +37,17 @@ import { betterAuth } from "better-auth";
 // import { UserRole } from "@prisma/client"
 // import { getAccountByUserId } from "./data/account"
 
-export const {
+
+
+
+
+
+// export const {
   // handlers: { GET, POST },
   // auth,
   // signIn,
   // signOut,
-} = betterAuth({
+// } = betterAuth({
   // pages : {
   //   signIn : "/login",
   //   error : "/error"
@@ -106,4 +141,4 @@ export const {
   // adapter: PrismaAdapter(db),
   // session: {strategy : "jwt"},
   // ...authConfig
-})
+// })
