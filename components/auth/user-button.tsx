@@ -1,7 +1,7 @@
 "use client";
 
-// import { FaUser } from "react-icons/fa";
-// import { ExitIcon } from "@radix-ui/react-icons"
+import { LogOut } from 'lucide-react';
+import { User } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -26,14 +26,14 @@ export const UserButton = ({user}: {user : any}) => {
         <Avatar>
           <AvatarImage src={user?.image || ""} />
           <AvatarFallback className="bg-sky-500">
-            {/* <FaUser className="text-white" /> */}
+            <User className="text-white" />
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40" align="end">
         <LogoutButton>
           <DropdownMenuItem>
-            {/* <ExitIcon className="h-4 w-4 mr-2" /> */}
+            <LogOut className="h-4 w-4 mr-2" />
             Logout
           </DropdownMenuItem>
         </LogoutButton>

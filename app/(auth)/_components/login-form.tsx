@@ -14,6 +14,8 @@ import { login } from "@/actions/login";
 import {  useState, useTransition } from "react";
 import {  useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { signIn } from "@/auth-client";
+import { toast } from "sonner";
 
 
 export const LoginForm = () => {
@@ -39,35 +41,27 @@ export const LoginForm = () => {
          setError("")
          setSuccess("")
          console.log("Login Form Values: ", values)
+
+        startTransition(() => {
+          signIn.email({
+            email: values.email,
+            password: values.password,
+            })
+            .then((data) => {
+              if (data.error) {
+                setError(data.error.message);
+                toast.error(data.error.message);
+              } else {
+                setSuccess("Conta criada com sucesso!");
+                toast.success("Conta criada com sucesso!");
+              }
+            })
+            .catch((err) => {
+              setError(err?.message || "Erro ao criar conta");
+              toast.error(err?.message || "Erro ao criar conta");
+            });
+        });          
          
-         startTransition(() => {
-             login(values, callbackUrl)
-                 .then((data) => {
-                    //  if (data?.error) {
-                    //    if (isTwoFactor) {
-                    //      // Preserva o código para permitir nova tentativa
-                    //      form.setValue("code", "");
-                    //    } else {
-                    //      form.reset({
-                    //        email: "",
-                    //        password: "",
-                    //        code: "",
-                    //      });
-                    //    }
-                    //    setError(data.error);
-                    //  }
-
-                    //  if (data?.success) {
-                    //      form.reset()
-                    //      setSuccess(data?.success)
-                    //  }
-
-                    //  if (data?.twoFactor) {
-                    //      setTwoFactor(true)
-                    //  }
-                 })
-                 .catch(() => setError("Something Went Wrong!"))
-         }) 
      }
 
     return (

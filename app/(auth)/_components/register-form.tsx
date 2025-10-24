@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { RegisterSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Form,FormControl,FormField,FormLabel,FormItem,FormMessage } from "@/components/ui/form";
+import { Form,FormControl,FormField,FormLabel,FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { CardWrapper } from "./card-wrapper"
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,8 @@ import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { register } from "@/actions/register";
 import { useState, useTransition } from "react";
+import { signUp } from "@/auth-client";
+import { toast } from "sonner";
 
 
 export const RegisterForm = () => {
@@ -31,13 +33,30 @@ export const RegisterForm = () => {
         setError("")
         setSuccess("")
 
+        console.log({values})
+
+
         startTransition(() => {
-            register(values)
-                .then((data: any) => {
-                    // setError(data.error)
-                    // setSuccess(data.success)
-                })
-        }) 
+          signUp
+            .email({
+              name: values.name,
+              email: values.email,
+              password: values.password,
+            })
+            .then((data) => {
+              if (data.error) {
+                setError(data.error.message);
+                toast.error(data.error.message);
+              } else {
+                setSuccess("Conta criada com sucesso!");
+                toast.success("Conta criada com sucesso!");
+              }
+            })
+            .catch((err) => {
+              setError(err?.message || "Erro ao criar conta");
+              toast.error(err?.message || "Erro ao criar conta");
+            });
+        }); 
     }
 
     return (
