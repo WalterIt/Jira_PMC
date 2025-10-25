@@ -12,11 +12,12 @@ import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { register } from "@/actions/register";
 import { useState, useTransition } from "react";
-import { signUp } from "@/auth-client";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 
 export const RegisterForm = () => {
+    const router = useRouter();
     const [error,setError] = useState<string | undefined>("")
     const [success,setSuccess] = useState<string | undefined>("")
     const [isPending, startTransition] = useTransition()
@@ -37,19 +38,19 @@ export const RegisterForm = () => {
 
 
         startTransition(() => {
-          signUp
-            .email({
+           register({
               name: values.name,
               email: values.email,
               password: values.password,
             })
             .then((data) => {
-              if (data.error) {
-                setError(data.error.message);
-                toast.error(data.error.message);
+              if (data?.error) {
+                setError(data?.error);
+                toast.error(data?.error);
               } else {
                 setSuccess("Conta criada com sucesso!");
                 toast.success("Conta criada com sucesso!");
+                router.push("/login");
               }
             })
             .catch((err) => {

@@ -10,15 +10,15 @@ import { CardWrapper } from "./card-wrapper"
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
-import { login } from "@/actions/login";
+import { login, signInEmailAction } from "@/actions/login";
 import {  useState, useTransition } from "react";
-import {  useSearchParams } from "next/navigation";
+import {  useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "@/auth-client";
 import { toast } from "sonner";
 
 
 export const LoginForm = () => {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get("callbackUrl")
     const urlError = searchParams.get("error") === "OAuthAccountNotLinked" ? "Email Already in use with a different Provider!!" : "";
@@ -42,25 +42,24 @@ export const LoginForm = () => {
          setSuccess("")
          console.log("Login Form Values: ", values)
 
-        startTransition(() => {
-          signIn.email({
-            email: values.email,
-            password: values.password,
+        signInEmailAction({
+              email: values.email,
+              password: values.password,
             })
             .then((data) => {
-              if (data.error) {
-                setError(data.error.message);
-                toast.error(data.error.message);
+              if (data?.error) {
+                setError(data?.error);
+                toast.error(data?.error);
               } else {
-                setSuccess("Conta criada com sucesso!");
-                toast.success("Conta criada com sucesso!");
+                setSuccess("Welcome Back!");
+                toast.success("Welcome Back!");
+                router.push("/profile");
               }
             })
             .catch((err) => {
-              setError(err?.message || "Erro ao criar conta");
-              toast.error(err?.message || "Erro ao criar conta");
+              setError(err?.message || "Erro ao fazer login!");
+              toast.error(err?.message || "Erro ao fazer login!");
             });
-        });          
          
      }
 

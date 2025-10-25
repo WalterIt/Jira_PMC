@@ -10,7 +10,87 @@ import { generateVerificationToken, generateTwoFactorToken } from "@/lib/tokens"
 import { sendVerificationEmail, sendTwoFactorTokenEmail} from "@/lib/mail";
 import { getTwoFactorTokenByEmail } from "@/data/two-factor-token";
 import { getTokenConfirmationByUserId } from "@/data/two-factor-confirmation";
+import { auth } from "@/auth";
+import { parseSetCookieHeader } from "better-auth/cookies";
+import { cookies, headers } from "next/headers";
 
+export const signInEmailAction = async (values : z.infer<typeof LoginSchema>, callbackUrl?: string | null) => {
+    const validateFields = LoginSchema.safeParse(values)
+    if (!validateFields.success) {
+        return { error : "Invalid Fields!" }
+    }
+
+    const { email, password, code} = validateFields.data
+    // const existingUser = await getUserByEmail(email)
+
+    // const existingUser = await getUserByEmail(email)
+
+    // if (existingUser) {
+    //     return { error: "Email Already Exists!" }
+    // }
+
+
+    // await db.user.create({
+    //     data: {
+    //         email,
+    //         name,
+    //         password : hashedPassword,
+    //     }
+    // })
+
+    const verificationToken = await generateVerificationToken(email)
+        // await sendVerificationEmail(
+        //     verificationToken.email,
+        //     verificationToken.token
+        // )
+
+        // return { success: "Confirmation Email Sent!" }
+     try {
+        const res = 
+       await auth.api.signInEmail({
+        headers: await headers(),
+         body: {
+           email,
+           password,
+         },
+         asResponse: true,
+       });
+
+           // ==== MANUALLY SET COOKIES ====
+        const setCookieHeader = res.headers.get("set-cookie");
+        if (setCookieHeader) {
+          const cookie = parseSetCookieHeader(setCookieHeader);
+          const cookieStore = await cookies();
+
+          const [key, props] = [...cookie.entries()][0];
+          const value = props.value;
+          const maxAge = props["max-age"];
+          const path = props.path;
+          const httpOnly = props.httponly;
+          const sameSite = props.samesite;
+
+          cookieStore.set(key, decodeURIComponent(value), {
+            maxAge,
+            path,
+            httpOnly,
+            sameSite,
+          });
+        }
+    // ==============================
+
+       return { error: null };
+     } catch (err) {
+       if (err instanceof Error) {
+         return { error: "Oops! Something went wrong!" };
+       }
+
+       return { error: "Internal Server Error" };
+     }
+
+
+
+
+}
 
 
 export const login = async (values : z.infer<typeof LoginSchema>, callbackUrl?: string | null) => {
