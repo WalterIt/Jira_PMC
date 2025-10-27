@@ -33,5 +33,5 @@ export const prefixRoutes = "/api/auth"
  * The default route to redirect after login or authentication
  * @type {string}
  */
-export const DEFAULT_REDIRECT_ROUTES = "/settings"
+export const DEFAULT_REDIRECT_ROUTES = "/profile"
 // export const DEFAULT_LOGIN_REDIRECT = "/login"

@@ -3,6 +3,7 @@ import { auth } from '@/auth'
 import { UserButton } from '@/components/auth/user-button'
 import { UserInfo } from '@/components/user-info'
 import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 
 const Profile = async  () => {
     const session = await auth.api.getSession({
@@ -10,9 +11,7 @@ const Profile = async  () => {
     }) 
     const user = session?.user;
 
-    if (!session) {
-      return <p className="text-destructive">Unauthorized</p>;
-    }
+    if (!session) redirect('/login');
 
   return (
     <>

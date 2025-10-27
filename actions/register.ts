@@ -7,7 +7,8 @@ import { RegisterSchema } from "@/schemas";
 import { getUserByEmail } from "@/data/user";
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/mail";
-import { auth } from "@/auth";
+import { auth, ErrorCode } from "@/auth";
+import { APIError } from "better-auth/api";
 
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
@@ -53,10 +54,21 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 
        return { error: null };
      } catch (err) {
-       if (err instanceof Error) {
-         return { error: "Oops! Something went wrong while registering!" };
+       if (err instanceof APIError) {
+         const errCode = err.body ? (err.body.code as ErrorCode) : "UNKNOWN";
+
+        //  console.log(`Registration error code: ${err}`);
+         console.log(err);
+
+         switch (errCode) {
+           case "USER_ALREADY_EXISTS":
+             return { error: "Oops! Something went wrong. Please try again." };
+           default:
+             return { error: err.message };
+         }
        }
 
        return { error: "Internal Server Error" };
      }
 }
+

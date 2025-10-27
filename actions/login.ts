@@ -13,6 +13,7 @@ import { getTokenConfirmationByUserId } from "@/data/two-factor-confirmation";
 import { auth } from "@/auth";
 import { parseSetCookieHeader } from "better-auth/cookies";
 import { cookies, headers } from "next/headers";
+import { APIError } from "better-auth/api";
 
 export const signInEmailAction = async (values : z.infer<typeof LoginSchema>, callbackUrl?: string | null) => {
     const validateFields = LoginSchema.safeParse(values)
@@ -46,49 +47,22 @@ export const signInEmailAction = async (values : z.infer<typeof LoginSchema>, ca
 
         // return { success: "Confirmation Email Sent!" }
      try {
-        const res = 
        await auth.api.signInEmail({
         headers: await headers(),
          body: {
            email,
            password,
          },
-         asResponse: true,
-       });
-
-           // ==== MANUALLY SET COOKIES ====
-        const setCookieHeader = res.headers.get("set-cookie");
-        if (setCookieHeader) {
-          const cookie = parseSetCookieHeader(setCookieHeader);
-          const cookieStore = await cookies();
-
-          const [key, props] = [...cookie.entries()][0];
-          const value = props.value;
-          const maxAge = props["max-age"];
-          const path = props.path;
-          const httpOnly = props.httponly;
-          const sameSite = props.samesite;
-
-          cookieStore.set(key, decodeURIComponent(value), {
-            maxAge,
-            path,
-            httpOnly,
-            sameSite,
-          });
-        }
-    // ==============================
+       });        
 
        return { error: null };
      } catch (err) {
-       if (err instanceof Error) {
-         return { error: "Oops! Something went wrong!" };
+       if (err instanceof APIError) {
+         return { error: err.message };
        }
 
        return { error: "Internal Server Error" };
      }
-
-
-
 
 }
 
