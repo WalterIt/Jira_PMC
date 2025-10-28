@@ -7,7 +7,8 @@ import { nextCookies } from "better-auth/next-js";
 import { createAuthMiddleware, APIError } from "better-auth/api"; 
 import { normalizeName, VALID_DOMAINS } from "@/lib/utils";
 import { UserRole } from "@/generated/prisma/client";
-
+import { admin } from "better-auth/plugins"
+import { ac, roles } from "@/lib/permissions";
 
 
 export const auth = betterAuth({
@@ -80,7 +81,15 @@ export const auth = betterAuth({
       generateId: false,
     },
   },
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    admin({
+      defaultRole: UserRole.USER,
+      adminRoles: [UserRole.ADMIN],
+      ac,
+      roles,
+    }),
+  ],
 });
 
 export type ErrorCode = keyof typeof auth.$ERROR_CODES | "UNKNOWN";

@@ -3,14 +3,14 @@
 import { FormSuccess } from '@/components/form-success';
 import { Button } from '@/components/ui/button';
 import { Card,CardContent,CardHeader } from '@/components/ui/card';
-// import { UserRole } from '@prisma/client';
 import { toast } from 'sonner';    
 import { admin } from '@/actions/admin';
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from '@/auth';
-import { getUsers } from '@/actions/users';
 import { DeleteUserButton, PlaceholderDeleteUserButton } from './_components/delete-user-button';
+import { UserRoleSelect } from './_components/user-role-select';
+import { UserRole } from '@/generated/prisma/client';
 
 const AdminPage = async () => {
 
@@ -39,7 +39,12 @@ const AdminPage = async () => {
     );
   }
 
-  const users = await getUsers();
+  const { users } = await auth.api.listUsers({
+    headers: headersList,
+    query: {
+      sortBy: "name",
+    },
+  });
 
   const sortedUsers = users.sort((a, b) => {
     if (a.role === "ADMIN" && b.role !== "ADMIN") return -1;
@@ -128,11 +133,10 @@ const AdminPage = async () => {
                 <td className="px-4 py-2">{user.name}</td>
                 <td className="px-4 py-2">{user.email}</td>
                 <td className="px-4 py-2 text-center">
-                  {user.role}
-                  {/* <UserRoleSelect
+                  <UserRoleSelect
                     userId={user.id}
                     role={user.role as UserRole}
-                  /> */}
+                  />
                 </td>
                 {/* <td className="px-4 py-2 text-center">
                   DELETE

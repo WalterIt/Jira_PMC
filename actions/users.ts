@@ -9,8 +9,21 @@ import { redirect } from "next/navigation";
 
 
 export const getUsers = async () => {
-  const users = await db.user.findMany({
-    orderBy:{name: 'asc'}
+  const headersList = await headers();
+
+  const session = await auth.api.getSession({
+    headers: headersList,
+  });
+
+  if (!session) throw new Error("Unauthorized");
+
+  if (session.user.role !== "ADMIN") {
+    throw new Error("Forbidden");
+  }
+  const users = await auth.api.listUsers({
+    query:{
+      sortBy: 'name',
+    }
   });
 
   return users;
