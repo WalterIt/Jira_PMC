@@ -49,7 +49,15 @@ function handleClick() {
   return (
     <span onClick={() => handleClick()} className="flex flex-col items-center gap-4 cursor-pointer">
         {children}
-    {session && <p className='text-xl text-blue-950 font-bold' >Welcome back, {session.user.name}! 👋</p>}
+    {session && (
+      <p className='flex items-center gap-2 text-xl text-blue-950 font-bold' >
+        <span
+            data-role={session.user.role}
+            className="size-4 rounded-full animate-pulse data-[role=USER]:bg-green-900 data-[role=ADMIN]:bg-red-600"
+          />
+        Welcome back, {session.user.name}! 👋
+      </p>
+      )}
 
     </span>
   )

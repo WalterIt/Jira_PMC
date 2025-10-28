@@ -15,12 +15,11 @@ const Profile = async  () => {
 
   return (
     <>
+      <UserInfo label="📱 Profile Client Component" user={user} />
       <h1 className='text-3xl text-bold text-slate-900'>PROFILE</h1>
-       <UserButton user={user}/>
       <pre className="text-sm overflow-clip">
         {JSON.stringify(session, null, 2)}
       </pre>
-      <UserInfo label="📱 Profile Client Component" user={user} />
     </>
   );
 }

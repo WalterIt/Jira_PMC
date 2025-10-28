@@ -6,6 +6,7 @@ import { hashPassword, verifyPassword } from "@/lib/argon2";
 import { nextCookies } from "better-auth/next-js";
 import { createAuthMiddleware, APIError } from "better-auth/api"; 
 import { normalizeName, VALID_DOMAINS } from "@/lib/utils";
+import { UserRole } from "@/generated/prisma/client";
 
 
 
@@ -47,6 +48,29 @@ export const auth = betterAuth({
         };
       }
     }),
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          const ADMIN_EMAILS = process.env.ADMIN_EMAILS?.split(";") ?? [];
+
+          if (ADMIN_EMAILS.includes(user.email)) {
+            return { data: { ...user, role: UserRole.ADMIN } };
+          }
+
+          return { data: user };
+        },
+      },
+    },
+  },  
+  user: {
+    additionalFields: {
+      role: {
+        type: ["USER", "ADMIN"] as Array<UserRole>,
+        input: false,
+      },
+    },
   },
   session: {
     expiresIn: 30 * 24 * 60 * 60,

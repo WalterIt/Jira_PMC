@@ -1,4 +1,4 @@
-import LoginButton from "../(auth)/_components/login-button";
+import LoginButton from "./(auth)/_components/login-button";
 import { Button } from "@/components/ui/button";
 
 const DashboarPage = () => {

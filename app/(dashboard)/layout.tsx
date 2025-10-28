@@ -1,4 +1,7 @@
-// import { Navbar } from "@/components/navbar";
+import { auth } from "@/auth";
+import Navbar  from "./_components/navbar";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 // import { Sidebar } from "@/components/sidebar";
 
 // import { EditTaskModal } from "@/features/tasks/components/edit-task-modal";
@@ -10,26 +13,47 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
-const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  return (
-    <div className="min-h-screen">
-      {/* <CreateWorkspaceModal />
-      <CreateProjectModal />
-      <CreateTaskModal />
-      <EditTaskModal /> */}
-      <div className="flex w-full h-full">
-        <div className="fixed left-0 top-0 hidden lg:block lg:w-[264px] h-full overflow-y-auto">
-          <p>This is a SideBar</p>
-          {/* <Sidebar /> */}
-        </div>
-        <div className="lg:pl-[264px] w-full">
-          <div className="mx-auto max-w-screen-2xl h-full">
-            <p>This is a the NavBar</p>
-            {/* <Navbar /> */}
-            <main className="h-full py-8 px-6 flex flex-col">{children}</main>
-          </div>
-        </div>
+const DashboardLayout = async ({ children }: DashboardLayoutProps) => {
+  const headersList = await headers();
+  const pathname = headersList.get('x-pathname');
+  const session = await auth.api.getSession({
+    headers: headersList,
+  });
+  const user = session?.user;
+
+  if (!session) redirect("/login");
+
+  if (pathname?.startsWith("/admin") && user?.role !== "ADMIN") {
+    <div className="px-8 py-16 container mx-auto max-w-5xl space-y-8">
+      <div className="space-y-4">
+        {/* <ReturnHomeButton /> */}
+
+        <h1 className="text-3xl font-bold">🔑 Admin Dashboard</h1>
+
+        <p className="p-2 rounded-md text-lg bg-red-600 text-muted-100 font-bold">
+          UNAUTHORIZED! You do not have permission to access this page.
+        </p>
       </div>
+    </div>;
+  }
+
+  // Esconde Navbar em qualquer rota que comece com /admin
+  // const showNavbar = !pathname?.startsWith('/admin');
+
+  // Proteção: apenas admins podem acessar /admin
+  // if (pathname?.startsWith('/admin') && user?.role !== 'ADMIN') {
+  //   redirect('/profile');
+  // }
+
+  // TODO: REFACTOR Navbar
+  
+  
+  return (
+    <div className="h-full pt-32 pb-4 w-full flex flex-col gap-y-6 items-center justify-center bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-sky-400 to-blue-800">
+      {pathname?.startsWith("/admin") && user?.role !== "ADMIN" ? null : <Navbar user={user} />}
+      
+      {/* <Navbar user={user} />    */}
+      {children}
     </div>
   );
 };

@@ -7,10 +7,13 @@ import {
   authRoutes
 } from "@/route";
 
-const protectedRoutes = ["/profile"];
+const protectedRoutes = ["/profile", "/admin"];
 
 export  function proxy(req: NextRequest) {
   const { nextUrl } = req;
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set('x-pathname', req.nextUrl.pathname);
+  console.log('PROXY.ts em execução. Pathname:', nextUrl.pathname);
   const sessionCookie = getSessionCookie(req);
 
   const res = NextResponse.next();
