@@ -12,14 +12,17 @@ import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { login } from "@/actions/login";
 import { useState, useTransition } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { newPassword } from "@/actions/new-password";
+import { toast } from "sonner";
+import { resetPassword } from "@/auth-client";
 
 
 export const NewPasswordForm = () => {
+    const router = useRouter();
     const searchParams = useSearchParams()
-    const token = searchParams.get("token")
+    const token: string | null = searchParams.get("token")
     const [error,setError] = useState<string | undefined>("")
     const [success,setSuccess] = useState<string | undefined>("")
     const [isPending, startTransition] = useTransition()
@@ -30,17 +33,35 @@ export const NewPasswordForm = () => {
         }
     })
 
+    if (!token) router.push("/login");
+
+    // http://localhost:3000/api/auth/reset-password/twKO05aiu5F0XQuQDELA3Hnt?callbackURL=%2Fauth%2Freset-password
+
+
+
+
     const onSubmit = (values: z.infer<typeof NewPasswordSchema>) => {
         setError("")
         setSuccess("")
 
         startTransition(() => {
-           newPassword(values, token)
-            .then((data) => {
-            //    setError(data?.error)
-            //    setSuccess(data?.success)
-           })
-        }) 
+          resetPassword({
+            newPassword: values.password,
+            token: token as string | undefined,
+            // redirectTo: "/auth/reset-password",
+            fetchOptions: {
+              onError: (ctx: any) => {
+                setError(ctx.error.message);
+                toast.error(ctx.error.message);
+              },
+              onSuccess: () => {
+                toast.success("Password has been reset successfully!");
+                setSuccess("Password has been reset successfully!");
+                  router.push("/login");
+              },
+            },
+          });
+        }); 
     }
 
     return (

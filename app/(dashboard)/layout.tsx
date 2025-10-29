@@ -21,7 +21,6 @@ const DashboardLayout = async ({ children }: DashboardLayoutProps) => {
   });
   const user = session?.user;
 
-  if (!session) redirect("/login");
 
   if (pathname?.startsWith("/admin") && user?.role !== "ADMIN") {
     <div className="px-8 py-16 container mx-auto max-w-5xl space-y-8">

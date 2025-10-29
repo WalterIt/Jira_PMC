@@ -48,9 +48,9 @@ export const RegisterForm = () => {
                 setError(data?.error);
                 toast.error(data?.error);
               } else {
-                setSuccess("Conta criada com sucesso!");
+                setSuccess("Confirmation Email Sent!");
                 toast.success("Conta criada com sucesso!");
-                router.push("/login");
+                // router.push("/login");
               }
             })
             .catch((err) => {

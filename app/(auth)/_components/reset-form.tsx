@@ -12,6 +12,8 @@ import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { useState, useTransition } from "react";
 import { reset } from "@/actions/reset";
+import { forgetPassword } from "@/auth-client";
+import { toast } from "sonner";
 
 
 export const ResetForm = () => {
@@ -25,24 +27,36 @@ export const ResetForm = () => {
         }
     })
 
-    const onSubmit = (values: z.infer<typeof ResetSchema>) => {
+    const onSubmit = async (values: z.infer<typeof ResetSchema>) => {
         setError("")
         setSuccess("")
 
         startTransition(() => {
-           reset(values)
-            .then((data) => {
-            //    setError(data?.error)
-            //    setSuccess(data?.success)
-           })
-        }) 
+         // TODO: Make a function to check if email exists before sending reset email
+
+          forgetPassword({
+            email: values.email,
+            redirectTo: "/auth/reset-password",
+            fetchOptions: {
+              onError: (ctx) => {
+                setError(ctx.error.message);
+                toast.error(ctx.error.message);
+              },
+              onSuccess: () => {
+                toast.success("Reset link sent to your email.");
+                setSuccess("Reset link sent to your email.");
+                //   router.push("/auth/forgot-password/success");
+              },
+            },
+          });
+        }); 
     }
 
     return (
        <CardWrapper headerLabel="Reset Password" backButtonLabel="Back To Login" backButtonHref="/login">
             <Form {...form}>
                 <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-                    <div className="space-y-4">
+                    <div className="space-y-4 ">
 
                         <FormField control={form.control} name="email" render={({ field }) => (
                             <FormItem>

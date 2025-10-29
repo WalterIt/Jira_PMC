@@ -9,6 +9,7 @@ import { normalizeName, VALID_DOMAINS } from "@/lib/utils";
 import { UserRole } from "@/generated/prisma/client";
 import { admin } from "better-auth/plugins"
 import { ac, roles } from "@/lib/permissions";
+import { sendEmailAction } from "@/actions/send-email.action";
 
 
 export const auth = betterAuth({
@@ -25,6 +26,30 @@ export const auth = betterAuth({
       clientSecret: String(process.env.GITHUB_CLIENT_SECRET),
     },
   },
+    emailVerification: {
+    sendOnSignUp: true,
+    expiresIn: 60 * 60,
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      console.log("URL Before changing:", url)
+      const email = user.email.endsWith("@example.com")
+        ? "destocotz@yahoo.com"
+        : user.email;
+
+      const link = new URL(url);
+      link.searchParams.set("callbackURL", "/verify");
+
+      await sendEmailAction({
+        to: email,
+        subject: "Verify your email address",
+        meta: {
+          description:
+            "Please verify your email address to complete the registration process.",
+          link: String(link),
+        },
+      });
+    },
+  },
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 6,
@@ -32,6 +57,29 @@ export const auth = betterAuth({
     password: {
       hash: hashPassword,
       verify: verifyPassword,
+    },
+    requireEmailVerification: true,
+    sendResetPassword: async ({ user, url }) => {
+      const email = user.email.endsWith("@example.com")
+        ? "destocotz@yahoo.com"
+        : user.email;
+
+      try {
+        await sendEmailAction({
+          to: email,
+          subject: "Reset your password",
+          meta: {
+            description: "Please click the link below to reset your password.",
+            link: String(url),
+          },
+        });
+      } catch (error) {
+        console.log("Error sending reset password email:", error);
+        throw {
+          error: "SendEmailFailed",
+          message: "Não foi possível enviar o e-mail de reset.",
+        };
+      }   
     },
   },
   hooks: {

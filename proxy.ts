@@ -13,6 +13,7 @@ export  function proxy(req: NextRequest) {
   const { nextUrl } = req;
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set('x-pathname', req.nextUrl.pathname);
+  // const isAuth = "/auth/";
   console.log('PROXY.ts em execução. Pathname:', nextUrl.pathname);
   const sessionCookie = getSessionCookie(req);
 
@@ -21,6 +22,15 @@ export  function proxy(req: NextRequest) {
   const isLoggedIn = !!sessionCookie;
   const isOnProtectedRoute = protectedRoutes.includes(nextUrl.pathname);
   const isOnAuthRoute = authRoutes.includes(nextUrl.pathname)
+
+    // Verifica se a rota começa com /auth/
+  // if (isAuth.startsWith('/auth/')) {
+  //   // Constrói a nova URL substituindo /auth/ por /(auth)/
+  //   const newPathname = isAuth.replace(/^\/auth\//, '/(auth)/');
+  //   const url = req.nextUrl.clone();
+  //   url.pathname = newPathname;
+  //   return NextResponse.redirect(url);
+  // }
 
 
 

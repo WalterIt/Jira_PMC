@@ -10,10 +10,11 @@ import { generateVerificationToken, generateTwoFactorToken } from "@/lib/tokens"
 import { sendVerificationEmail, sendTwoFactorTokenEmail} from "@/lib/mail";
 import { getTwoFactorTokenByEmail } from "@/data/two-factor-token";
 import { getTokenConfirmationByUserId } from "@/data/two-factor-confirmation";
-import { auth } from "@/auth";
+import { auth, ErrorCode } from "@/auth";
 import { parseSetCookieHeader } from "better-auth/cookies";
 import { cookies, headers } from "next/headers";
 import { APIError } from "better-auth/api";
+import { redirect } from "next/navigation";
 
 export const signInEmailAction = async (values : z.infer<typeof LoginSchema>, callbackUrl?: string | null) => {
     const validateFields = LoginSchema.safeParse(values)
@@ -48,17 +49,24 @@ export const signInEmailAction = async (values : z.infer<typeof LoginSchema>, ca
         // return { success: "Confirmation Email Sent!" }
      try {
        await auth.api.signInEmail({
-        headers: await headers(),
+         headers: await headers(),
          body: {
            email,
            password,
          },
-       });        
+       });
 
        return { error: null };
      } catch (err) {
        if (err instanceof APIError) {
-         return { error: err.message };
+         const errCode = err.body ? (err.body.code as ErrorCode) : "UNKNOWN";
+         console.dir(err, { depth: 5 });
+         switch (errCode) {
+           case "EMAIL_NOT_VERIFIED":
+             redirect("/verify?error=email_not_verified");
+           default:
+             return { error: err.message };
+         }
        }
 
        return { error: "Internal Server Error" };
