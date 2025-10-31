@@ -1,73 +1,46 @@
-"use server"
+"use server";
 
-import * as z from "zod"
-// import bcrypt from "bcryptjs"
-// import { db } from "@/lib/db"
-import { currentUser } from "@/lib/custom-auth"
-import { SettingsSchema } from "@/schemas"
-import { getUserByEmail, getUserById } from "@/data/user"
-import { generateVerificationToken } from "@/lib/tokens"
-import { sendVerificationEmail } from "@/lib/mail"
-import { revalidatePath } from "next/cache"
+import { z } from "zod";
+import { SettingsSchema } from "@/schemas";
+import { auth } from "@/auth";
+import { APIError } from "better-auth/api";
+import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 
-export const settings = async (values : z.infer<typeof SettingsSchema>) => {
-    const user = await currentUser()
-
-    // if (!user) return {error : "Unauthorized!!"}
-
-    // const dbUser = await getUserById(user.id)
-    
-    // if(!dbUser) return {error : "Unauthorized!!"}
-
-    // if(user.isOauth) {
-    //     values.email = undefined
-    //     values.password = undefined
-    //     values.newPassword = undefined
-    //     values.isTwoFactorEnabled = undefined
-    // }
-
-    // if(values.password !== values.newPassword) return {error : "Passwords Don't Match!"}
-
-    // if (values.email && values.email !== user.email) {
-        // const existingUser = await getUserByEmail(values.email)
-        // if(existingUser && existingUser.id !== user.id) {
-        //     return {error : "Email Already Exists!!"}
-        // }
-        // const verificationToken = await generateVerificationToken(values.email)
-        // await sendVerificationEmail(verificationToken.email, verificationToken.token)
-
-        // return {success : "Verification Email Sent!"}
-    // }
+export const settings = async (values: z.infer<typeof SettingsSchema>) => {
+  try {
 
 
-    // if (values.password && values.newPassword && dbUser.password) {
-    //     const passwordMatch = await bcrypt.compare(values.password, dbUser.password)
-
-    //     if (!passwordMatch) {
-    //         return {error : "Incorrect Password!"}
-    //     }
-
-    //     const hashNewPassword = await bcrypt.hash(values.newPassword, 10)
-    //     values.password = hashNewPassword
-    //     values.newPassword = undefined
-    // }
+    // Atualização de nome
+    if (values.name) {
+      await auth.api.updateUser({
+        headers: await headers(),
+        body: { name: values.name },
+      });
+    }
 
 
-    // await db.user.update({
-    //     where : {id : dbUser.id},
-    //     data: {
-    //         ...values
-    //     }
-    // })
+    // Atualização de senha
+    if (values.password && values.newPassword) {
+      await auth.api.changePassword({
+        headers: await headers(),
+        body: {
+          currentPassword: values.password,
+          newPassword: values.newPassword,
+        },
+      });
+    }
 
+    // Revalidação dos caminhos
+    const paths = ["/", "/login", "/server", "/client", "/admin", "/settings"];
+    paths.forEach((path) => revalidatePath(path));
 
-    revalidatePath("/");
-    revalidatePath("/login");
-    revalidatePath("/server");
-    revalidatePath("/client");
-    revalidatePath("/admin");
-    revalidatePath("/settings");
-
-
-    return {success : "Settings Updated!"} 
-}
+    return { success: "User Settings Updated!" };
+  } catch (err) {
+    return {
+      error: err instanceof APIError
+        ? err.message
+        : "Internal Server Error"
+    };
+  }
+};

@@ -15,6 +15,7 @@ import {  useState, useTransition } from "react";
 import {  useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
+import { MagicLinkLoginForm } from "./magic-link-login-form";
 
 
 export const LoginForm = () => {
@@ -70,6 +71,7 @@ export const LoginForm = () => {
         backButtonHref="/register"
         showSocial
       >
+        <MagicLinkLoginForm />
         <Form {...form}>
           <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
             <div className="space-y-4">

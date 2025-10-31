@@ -44,7 +44,7 @@ export const UserRoleSelect = ({ userId, role }: UserRoleSelectProps) => {
           toast.error(ctx.error.message);
         },
         onSuccess: () => {
-          toast.success("User role pdated!");
+          toast.success("User role updated!");
           router.refresh();
         },
       },

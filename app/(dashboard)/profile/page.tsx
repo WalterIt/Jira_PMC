@@ -1,8 +1,8 @@
 
-import { auth } from '@/auth'
 import { UserButton } from '@/components/auth/user-button'
 import { Button } from '@/components/ui/button'
 import { UserInfo } from '@/components/user-info'
+import { auth } from '@/auth'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 

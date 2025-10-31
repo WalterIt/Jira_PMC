@@ -2,7 +2,7 @@
 
 import * as z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { SettingsSchema } from '@/schemas'
+import { SettingsSchema, UserRole } from '@/schemas'
 import React, {  useState, useTransition } from 'react'
 // import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -16,10 +16,10 @@ import { FormError } from '@/components/form-error'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 // import { UserRole } from '@prisma/client'
 // import { Switch } from '@/components/ui/switch'
-import { ExtendedUser } from '@/next-auth'
+// import { ExtendedUser } from '@/next-auth'
 import { User } from 'lucide-react'
 
-const UserSettings = ({user}: {user : ExtendedUser}) => {
+const UserSettings = ({user}:any) => {
   const [success, setSuccess] = useState<string | undefined>()
   const [error, setError] = useState<string | undefined>()
   // const { update } = useSession()
@@ -32,7 +32,7 @@ const UserSettings = ({user}: {user : ExtendedUser}) => {
       name: user?.name || undefined,
       email: user?.email || undefined,
       isTwoFactorEnabled: user?.isTwoFactorEnabled || undefined,
-      // role: user?.role,
+      role: user?.role,
       password: undefined,
       newPassword: undefined
     }
@@ -42,15 +42,16 @@ const UserSettings = ({user}: {user : ExtendedUser}) => {
     startTransition(() => {
       settings(values)
         .then((data) => {
-          // if (data?.error) {
-          //   setError(data.error)
-          // }
-          // if (data?.success) {
-          //   update()
-          //   setSuccess(data.success)
-          // }
+           if ('error' in data) {
+              setError(data.error)
+            } else if ('success' in data) {
+              setSuccess(data.success)
+            } else {
+              setError("Something Went Wrong!")
+            }
         })
         .catch(() => setError("Something Went Wrong!"))
+
     })
   }
 
@@ -80,7 +81,6 @@ const UserSettings = ({user}: {user : ExtendedUser}) => {
                   </FormItem>
                 )}
               />
-              {user?.isOauth === false && (
                 <>
               <FormField
                 control={form.control}
@@ -139,10 +139,9 @@ const UserSettings = ({user}: {user : ExtendedUser}) => {
               />
               
               </>
-              )}
               
             
-              {/* <FormField
+              <FormField
                 control={form.control}
                 name="role"
                 render={({ field }) => (
@@ -166,9 +165,9 @@ const UserSettings = ({user}: {user : ExtendedUser}) => {
                     <FormMessage />
                   </FormItem>
                 )}
-              /> */}
+              />
 
-              {user?.isOauth === false && (
+              {user && (
               <FormField 
               control={form.control}
               name="isTwoFactorEnabled"
